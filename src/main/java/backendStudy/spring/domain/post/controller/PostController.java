@@ -28,4 +28,17 @@ public class PostController {
     public List<Post> findAllPosts() {
         return postService.findAllPosts();
     }
+
+    @GetMapping("/{id}")
+    @ResponseBody
+    public PostDto findPostById(@PathVariable Long id) {
+        return postService.findPostById(id);
+    }
+
+    @PutMapping("/{id}")
+    public PostDto updatePost(@PathVariable Long id, @RequestBody PostDto postDto) {
+        PostDto updatedPost = postService.updatePost(id, postDto);
+        return updatedPost;
+    }
+
 }
