@@ -38,6 +38,7 @@ public class PostService {
         return new PostDto(post.getId(), post.getTitle(), post.getContent());
     }
 
+    @Transactional
     public PostDto updatePost(Long id, PostDto postDto) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid post id: " + id));
@@ -47,5 +48,9 @@ public class PostService {
         return new PostDto(updatedPost.getId(), updatedPost.getTitle(), updatedPost.getContent());
     }
 
+    @Transactional
+    public void deletePost(Long id) {
+        postRepository.deleteById(id);
+    }
 
 }

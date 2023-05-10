@@ -14,6 +14,10 @@ public class PostDto {
     private LocalDateTime createdAt;
     private LocalDateTime updateAt;
 
+    public PostDto() {
+
+    }
+
     public PostDto(Long id, String title, String content) {
         this.id = id;
         this.title = title;
