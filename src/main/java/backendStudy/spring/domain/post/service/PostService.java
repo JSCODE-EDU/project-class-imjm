@@ -18,10 +18,12 @@ public class PostService {
     private final PostRepository postRepository;
 
 
+    @Transactional
     public Post createPost(PostDto postDto) {
         Post post = new Post();
         post.setTitle(postDto.getTitle());
         post.setContent(postDto.getContent());
+        post.setCreatedAt(postDto.getCreatedAt());
         Post savedPost = postRepository.save(post);
         return savedPost;
     }
@@ -35,7 +37,7 @@ public class PostService {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 id: " + id));
 
-        return new PostDto(post.getId(), post.getTitle(), post.getContent());
+        return new PostDto(post.getId(), post.getTitle(), post.getContent(), post.getCreatedAt());
     }
 
     @Transactional
@@ -45,7 +47,7 @@ public class PostService {
         post.setTitle(postDto.getTitle());
         post.setContent(postDto.getContent());
         Post updatedPost = postRepository.save(post);
-        return new PostDto(updatedPost.getId(), updatedPost.getTitle(), updatedPost.getContent());
+        return new PostDto(updatedPost.getId(), updatedPost.getTitle(), updatedPost.getContent(), updatedPost.getCreatedAt());
     }
 
     @Transactional

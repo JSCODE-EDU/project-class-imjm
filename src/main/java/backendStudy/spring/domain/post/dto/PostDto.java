@@ -18,9 +18,10 @@ public class PostDto {
 
     }
 
-    public PostDto(Long id, String title, String content) {
+    public PostDto(Long id, String title, String content, LocalDateTime createdAt) {
         this.id = id;
         this.title = title;
         this.content = content;
+        this.createdAt = createdAt;
     }
 }
