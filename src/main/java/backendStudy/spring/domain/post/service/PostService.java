@@ -11,6 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -58,6 +59,29 @@ public class PostService {
     @Transactional
     public void deletePost(Long id) {
         postRepository.deleteById(id);
+    }
+
+    public List<PostDto> searchPosts(String keyword) {
+        Pageable pageable = PageRequest.of(0, 100, Sort.Direction.DESC, "createdAt");
+        List<Post> posts = postRepository.findByTitleContaining(keyword, pageable);
+        List<PostDto> postDtoList = new ArrayList<>();
+
+        if(posts.isEmpty()) return postDtoList;
+
+        for(Post post : posts) {
+            postDtoList.add(this.convertEntityToDto(post));
+        }
+        
+        return postDtoList;
+    }
+
+    private PostDto convertEntityToDto(Post post) {
+        return PostDto.builder()
+                .id(post.getId())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .createdAt(post.getCreatedAt())
+                .build();
     }
 
 }

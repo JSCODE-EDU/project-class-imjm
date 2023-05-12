@@ -1,5 +1,6 @@
 package backendStudy.spring.domain.post.dto;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,6 +19,7 @@ public class PostDto {
 
     }
 
+    @Builder
     public PostDto(Long id, String title, String content, LocalDateTime createdAt) {
         this.id = id;
         this.title = title;
