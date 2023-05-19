@@ -4,9 +4,14 @@ import backendStudy.spring.domain.post.domain.Post;
 import backendStudy.spring.domain.post.dto.PostDto;
 import backendStudy.spring.domain.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,24 +23,27 @@ public class PostService {
     private final PostRepository postRepository;
 
 
+    @Transactional
     public Post createPost(PostDto postDto) {
         Post post = new Post();
         post.setTitle(postDto.getTitle());
         post.setContent(postDto.getContent());
+        post.setCreatedAt(postDto.getCreatedAt());
         Post savedPost = postRepository.save(post);
         return savedPost;
     }
 
     public List<Post> findAllPosts() {
-        List<Post> posts = postRepository.findAll();
-        return posts;
+        Pageable pageable = PageRequest.of(0, 100, Sort.Direction.DESC, "createdAt");
+        Page<Post> postPage = postRepository.findAll(pageable);
+        return postPage.getContent();
     }
 
     public PostDto findPostById(Long id) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 id: " + id));
 
-        return new PostDto(post.getId(), post.getTitle(), post.getContent());
+        return new PostDto(post.getId(), post.getTitle(), post.getContent(), post.getCreatedAt());
     }
 
     @Transactional
@@ -45,12 +53,35 @@ public class PostService {
         post.setTitle(postDto.getTitle());
         post.setContent(postDto.getContent());
         Post updatedPost = postRepository.save(post);
-        return new PostDto(updatedPost.getId(), updatedPost.getTitle(), updatedPost.getContent());
+        return new PostDto(updatedPost.getId(), updatedPost.getTitle(), updatedPost.getContent(), updatedPost.getCreatedAt());
     }
 
     @Transactional
     public void deletePost(Long id) {
         postRepository.deleteById(id);
+    }
+
+    public List<PostDto> searchPosts(String keyword) {
+        Pageable pageable = PageRequest.of(0, 100, Sort.Direction.DESC, "createdAt");
+        List<Post> posts = postRepository.findByTitleContaining(keyword, pageable);
+        List<PostDto> postDtoList = new ArrayList<>();
+
+        if(posts.isEmpty()) return postDtoList;
+
+        for(Post post : posts) {
+            postDtoList.add(this.convertEntityToDto(post));
+        }
+        
+        return postDtoList;
+    }
+
+    private PostDto convertEntityToDto(Post post) {
+        return PostDto.builder()
+                .id(post.getId())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .createdAt(post.getCreatedAt())
+                .build();
     }
 
 }

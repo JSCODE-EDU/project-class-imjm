@@ -6,11 +6,12 @@ import backendStudy.spring.domain.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("posts")
 public class PostController {
@@ -24,29 +25,31 @@ public class PostController {
     }
 
     @GetMapping
-    @ResponseBody
     public List<Post> findAllPosts() {
         return postService.findAllPosts();
     }
 
     @GetMapping("/{id}")
-    @ResponseBody
     public PostDto findPostById(@PathVariable Long id) {
         return postService.findPostById(id);
     }
 
     @PutMapping("/{id}")
-    @ResponseBody
     public PostDto updatePost(@PathVariable Long id, @RequestBody PostDto postDto) {
         PostDto updatedPost = postService.updatePost(id, postDto);
         return updatedPost;
     }
 
     @DeleteMapping("/{id}")
-    @ResponseBody
     public String deletePost(@PathVariable Long id) {
         postService.deletePost(id);
-        return "delete";
+        return "deleted";
+    }
+
+    @GetMapping("/search")
+    public List<PostDto> search(@RequestParam(value = "keyword") String keyword) {
+        List<PostDto> postDtoList = postService.searchPosts(keyword);
+        return postDtoList;
     }
 
 }
